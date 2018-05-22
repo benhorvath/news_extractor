@@ -113,7 +113,8 @@ class NewsExtractor(object):
         cleaned = self.clean_html(raw_html)
         doc = document_fromstring(cleaned)
         body = doc.xpath('//body')[0]
-        return [remove_css_class(css, body) for css in self.kill_css_classes]
+        rem = [remove_css_class(css, body) for css in self.kill_css_classes]
+        return rem[len(rem) - 1]
 
     def plot(self):
         """ Plots node scores."""
