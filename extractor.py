@@ -6,7 +6,7 @@ sum algorithm.
 
 TODO
 ====
--
+- Write documentation
 
 """
 
@@ -44,10 +44,13 @@ class NewsExtractor(object):
                             in nodes]
 
         best_nodes_ix = self.get_best_nodes(self.node_scores)
-        best_nodes = [nodes[i] for i in best_nodes_ix]
-        content_nodes = tostring(nodes[i].getparent() for i in best_nodes)
-        content = ' '.join(content_nodes)
+        best_nodes = []
+        for i, score in enumerate(self.node_scores):
+            if score >= best_nodes_ix:
+                best_nodes.append(i)
 
+        content_nodes = [tostring(nodes[i].getparent()) for i in best_nodes]
+        content = '\n\n'.join(content_nodes)
         return content
 
     def calc_comp_density(self, node, lc_b, c_b):
@@ -110,12 +113,12 @@ class NewsExtractor(object):
         cleaned = self.clean_html(raw_html)
         doc = document_fromstring(cleaned)
         body = doc.xpath('//body')[0]
-        return map(lambda x: remove_css_class(x, body), self.kill_css_classes)
+        return [remove_css_class(css, body) for css in self.kill_css_classes]
 
     def plot(self):
         """ Plots node scores."""
         if self.node_scores is None:
-            raise('Extract text before plotting')
+            raise 'Extract text before plotting'
         else:
             plt.plot(self.node_scores)
             plt.xlabel('Nodes')
@@ -191,6 +194,6 @@ if __name__ == '__main__':
 
     extractor = NewsExtractor()
     content = extractor.extract(html)
-
-    extractor.plot
+    print(content)
+    extractor.plot()
 
